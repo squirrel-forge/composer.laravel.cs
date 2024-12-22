@@ -83,3 +83,49 @@ if (!function_exists(__NAMESPACE__ . '\\requireStorageFolderStructure')) {
         }
     }
 }
+
+if (!function_exists(__NAMESPACE__ . '\\joinAndResolvePaths')) {
+    function joinAndResolvePaths(string ...$paths): string
+    {
+        $joined = implode(DIRECTORY_SEPARATOR, $paths);
+
+        // Maintain first and last separator state
+        $root = $joined[0] === DIRECTORY_SEPARATOR;
+        $trailing = $joined[mb_strlen($joined) - 1] === DIRECTORY_SEPARATOR;
+
+        $resolved = [];
+        $segments = explode(DIRECTORY_SEPARATOR, $joined);
+        foreach ($segments as $segment) {
+            $append = true;
+
+            // Empty or current path segments can be ignored
+            if (empty($segment) || $segment === '.') continue;
+
+            // Parent path segments need to be resolved
+            if ($segment === '..') {
+
+                // It's the first segment
+                if (empty($resolved)) {
+
+                    // We want to keep this segment, but the path cannot be a root path.
+                    if ($root) $root = false;
+
+                    // It's not the first and our previous segment is not a parent path segment.
+                } else if ($resolved[count($resolved) - 1] !== '..') {
+
+                    // Remove the previous segment.
+                    array_pop($resolved);
+
+                    // And here we do not wish to add the parent path segment since we resolved it.
+                    $append = false;
+                }
+            }
+
+            // Only append segment if required
+            if ($append) $resolved[] = $segment;
+        }
+        return ($root ? DIRECTORY_SEPARATOR : '') .
+            implode(DIRECTORY_SEPARATOR, $resolved) .
+            ($trailing ? DIRECTORY_SEPARATOR : '');
+    }
+}
