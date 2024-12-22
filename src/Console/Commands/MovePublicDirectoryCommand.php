@@ -9,7 +9,7 @@ use function SquirrelForge\Laravel\CoreSupport\joinAndResolvePaths;
 class MovePublicDirectoryCommand extends Command
 {
     /** @var string $signature The name and signature of the console command. */
-    protected $signature = 'sqfcs:mvpub {target}';
+    protected $signature = 'sqfcs:mvpub {target} {--cp=}';
 
     /** @var string $description The console command description. */
     protected $description = 'Setups folders and env config outside of laravel root';
@@ -21,6 +21,18 @@ class MovePublicDirectoryCommand extends Command
     public function handle()
     {
         $messageAbort = 'Move laravel public directory command aborted.';
+
+        // Get copy option
+        $copyFiles = $this->option('cp');
+        if (!empty($copyFiles)) {
+            if (in_array(mb_strtolower(trim($copyFiles)), ['everything', 'complete', 'true', 'all', 'yes', 'y', 'on', '1'])) {
+                $copyFiles = true;
+            } else {
+                $copyFiles = explode(',', $copyFiles);
+            }
+        } else {
+            $copyFiles = false;
+        }
 
         // Resolve target path
         $target = $this->argument('target');
@@ -45,35 +57,43 @@ class MovePublicDirectoryCommand extends Command
 
         // Copy .htaccess, index.php
         // and link all other public files
-        $this->copyAndLinkFiles($target);
+        $this->linkOrCopyFiles($target, $copyFiles);
 
         // Link all folders
-        $this->linkAllFolders($target);
+        $this->linkOrCopyFolders($target, $copyFiles);
 
-        $this->info('Public directory moved/linked to: ' . $target);
+        $this->info('Public directory copied/linked to:');
+        $this->line('  ' . $target);
     }
 
     /**
-     * Link all public folders
-     * @param $path
+     * Link or copy public folders
+     * @param string $path
+     * @param bool|array $copy
      * @return void
      */
-    protected function linkAllFolders($path): void
+    protected function linkOrCopyFolders(string $path, bool|array $copy = false): void
     {
         $publicFolders = File::directories(public_path());
         foreach ($publicFolders as $src) {
-            $target = joinAndResolvePaths($path, basename($src));
+            $dirname = basename($src);
+            $target = joinAndResolvePaths($path, $dirname);
             File::delete($target);
-            File::link($src, $target);
+            if ($copy === true || is_array($copy) && in_array($dirname, $copy)) {
+                File::copyDirectory($src, $target);
+            } else {
+                File::link($src, $target);
+            }
         }
     }
 
     /**
-     * Link or copy all public files
+     * Link or copy public files
      * @param string $path
+     * @param bool|array $copy
      * @return void
      */
-    protected function copyAndLinkFiles(string $path): void
+    protected function linkOrCopyFiles(string $path, bool|array $copy = false): void
     {
         /**
          * @type {\Symfony\Component\Finder\SplFileInfo[]}
@@ -84,11 +104,11 @@ class MovePublicDirectoryCommand extends Command
             $src = public_path($name);
             $target = joinAndResolvePaths($path, $name);
             File::delete($target);
-            if (in_array($name, ['.htaccess', 'index.php'])) {
-                if ($name === 'index.php') {
+            if ($copy === true || is_array($copy) && in_array($name, $copy)) {
+                if (preg_match('/\.php$/', $name)) {
                     $relative = $this->getRelativePath($src, $target);
-                    $index = $this->updateRelativePaths($relative, File::get($src));
-                    File::put($target, $index);
+                    $updated = $this->updateRelativePaths($relative, File::get($src));
+                    File::put($target, $updated);
                 } else {
                     File::copy($src, $target);
                 }
@@ -139,7 +159,7 @@ class MovePublicDirectoryCommand extends Command
     protected function warnPathNotEmpty(string $target): bool
     {
         if (!empty(File::files($target, true))) {
-            $message = 'Target directory is not empty, continue anyway?';
+            $message = 'Target directory is not empty, continue anyway? (existing files and directories will be replaced!)';
             if (!$this->confirm($message, true)) return false;
         }
         return true;

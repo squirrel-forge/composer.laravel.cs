@@ -24,6 +24,20 @@ Check the [configuration](resources/config/config.php) for detailed option descr
 
 [Middleware](src/Http/Middleware/ResponseHeaders.php) that sets security headers for every request.
 
+## Moving the public directory
+
+To copy or symlink your public directory to a new location, run the *mvpub* command.
+Note that running this command from the appropriate user/context will prevent permission issues.
+
+The *target* can be relative to laravel root or system absolute.
+The *--cp* option defines, if and which files are copied instead of linked.
+
+```shell
+php artisan sqfcs:mvpub {target} {--cp=null|all|true|filename,dirname...}
+```
+
+Any *.php files that are copied and not linked, will have "../" replaced with the new relative path to the laravel root.
+
 ## Directory locator
 
 If you wish to use the directory locator services, you need
