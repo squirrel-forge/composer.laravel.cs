@@ -14,7 +14,7 @@ Composer repository entry:
 
 ## Middleware configuration
 
-Check the [configuration](config/config.php) for detailed option descriptions.
+Check the [configuration](resources/config/config.php) for detailed option descriptions.
 
 ### Dynamic debug
 
