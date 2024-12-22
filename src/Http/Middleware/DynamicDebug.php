@@ -25,8 +25,8 @@ class DynamicDebug {
     /** @var null|string $origin */
     protected ?string $origin = null;
 
-    /** @var array $config */
-    protected array $config;
+    /** @var null|array $config */
+    protected ?array $config;
 
     /**
      * Constructor.
@@ -46,8 +46,8 @@ class DynamicDebug {
      */
     public function handle(Request $request, Closure $next)
     {
-        // Only check if debug is disabled
-        if (!config('app.debug')) {
+        // Only check if debug is disabled and config is available
+        if (!config('app.debug') && !empty($this->config)) {
 
             // Requires configured activators
             if (!isset($this->config['use']) || !is_array($this->config['use'])) {
