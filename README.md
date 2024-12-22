@@ -1,7 +1,16 @@
 # composer.laravel.cs
-## Laravel squirrel-forge Laravel Core Support
+## Squirrel-Forge Laravel Core Support
 
-Composer: squirrel-forge/lara-cs
+Composer module: **squirrel-forge/lara-cs**
+
+Composer repository entry:
+```json
+{
+    "type": "vcs",
+    "url": "git@github.com:squirrel-forge/composer.laravel.cs.git",
+    "no-api": true
+}
+```
 
 ## Middleware configuration
 
