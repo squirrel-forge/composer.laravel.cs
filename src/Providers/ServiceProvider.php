@@ -3,6 +3,7 @@
 namespace SquirrelForge\Laravel\CoreSupport\Providers;
 
 use Illuminate\Support\ServiceProvider as Provider;
+use SquirrelForge\Laravel\CoreSupport\Console\Commands\MovePublicDirectoryCommand;
 use SquirrelForge\Laravel\CoreSupport\Http\Middleware\DynamicDebug;
 use SquirrelForge\Laravel\CoreSupport\Http\Middleware\ResponseHeaders;
 
@@ -26,6 +27,11 @@ class ServiceProvider extends Provider
      */
     public function boot(): void
     {
+        // Register commands
+        if ($this->app->runningInConsole()) {
+            $this->commands([MovePublicDirectoryCommand::class]);
+        }
+
         // Register middleware
         $this->app->get('router')->pushMiddlewareToGroup('web', DynamicDebug::class);
         $this->app->get('router')->pushMiddlewareToGroup('web', ResponseHeaders::class);
