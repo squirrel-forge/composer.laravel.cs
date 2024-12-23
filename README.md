@@ -8,7 +8,8 @@
    - [Dynamic debug](#dynamic-debug)
    - [Response headers](#response-headers)
  - [Nested folder routing](#nested-folder-routing)
- - [Moving the public directory](#moving-the-public-directory)
+ - [Linking the public directory](#linking-the-public-directory)
+   - [Moving the public directory](#moving-the-public-directory)
  - [Directory locator](#directory-locator)
 
 ## Module information
@@ -78,7 +79,7 @@ RewriteRule ^(.*)favicon.ico$ favicon.ico [NC,QSA,L]
 RewriteRule ^(.*)robots.txt$ robots.txt [NC,QSA,L]
 ```
 
-## Moving the public directory
+## Linking the public directory
 
 To copy or symlink your public directory to a new location, run the *sqfcs:mvpub* command.
 Note that running this command from the appropriate user/context will prevent permission issues.
@@ -94,8 +95,9 @@ php artisan sqfcs:mvpub {target} {--cp=all|filename,dirname,...}
 
 Any *.php files that are copied and not linked, will have "../" replaced with the new relative path to the laravel root.
 
-**If you are moving/copying the public directory** and not linking, in your Kernels,
-set following code to let laravel know of the move:
+### Moving the public directory
+If you must **move/copy** the public directory and *not link* it to another location,
+in your Kernels, set following code to let laravel know of the move:
 
 ```php
 use function SquirrelForge\Laravel\CoreSupport\joinAndResolvePaths;
