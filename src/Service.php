@@ -13,32 +13,29 @@ use SquirrelForge\Laravel\CoreSupport\Exceptions\DirectoryNotFoundException;
  */
 class Service {
 
-    /** @var \Illuminate\Contracts\Foundation\Application $app */
+    /** @var null|Application $app Laravel application instance. */
     public static ?Application $app = null;
 
-    /** @var int $iterationLimit */
+    /** @var int $iterationLimit Maximum parent levels that are checked. */
     public static int $iterationLimit = 4;
 
-    /** @var boolean $resolveLinks */
+    /** @var boolean $resolveLinks Follow symlinks when locating a directory. */
     public static bool $resolveLinks = true;
 
-    /** @var null|string $baseDir */
+    /** @var null|string $baseDir Override default base dir. */
     public static ?string $baseDir = null;
 
-    /** @var null|string $storageDir */
-    public static ?string $storageDir = null;
-
-    /** @var int $umask */
+    /** @var int $umask Set umask for storage directory creating. */
     public static int $umask = 022;
 
-    /** @var boolean $throwExceptions */
+    /** @var boolean $throwExceptions Set this value to false if you wish to die silently. */
     public static bool $throwExceptions = true;
 
-    /** @var bool $hasRunEnv */
-    private static bool $hasRunEnv = false;
+    /** @var bool $hasRunEnv Env location can only be run once. */
+    protected static bool $hasRunEnv = false;
 
-    /** @var bool $hasRunStorage */
-    private static bool $hasRunStorage = false;
+    /** @var bool $hasRunStorage Storage location can only be run once. */
+    protected static bool $hasRunStorage = false;
 
     /**
      * Locate env file dir
@@ -131,7 +128,7 @@ class Service {
     }
 
     /**
-     * Set baseDir and storageDir defaults
+     * Set baseDir defaults
      * @param Application|null $app
      * @return void
      */
@@ -139,6 +136,5 @@ class Service {
     {
         if ($app && !static::$app) static::$app = $app;
         if (!static::$baseDir) static::$baseDir = base_path();
-        if (!static::$storageDir) static::$storageDir = storage_path();
     }
 }
