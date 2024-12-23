@@ -67,19 +67,21 @@ if (!function_exists(__NAMESPACE__ . '\\requireStorageFolderStructure')) {
      */
     function requireStorageFolderStructure(string $path, int $mask = 022): void
     {
+        $path = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
         $dirs = [
-            '/app',
-            '/app/public',
-            '/framework',
-            '/framework/cache',
-            '/framework/sessions',
-            '/framework/testing',
-            '/framework/views',
-            '/logs',
+            ['app'],
+            ['app', 'public'],
+            ['framework'],
+            ['framework', 'cache'],
+            ['framework', 'sessions'],
+            ['framework', 'testing'],
+            ['framework', 'views'],
+            ['logs'],
         ];
         umask($mask);
         foreach ($dirs as $dir) {
-            if (!is_dir($path . $dir)) mkdir($path . $dir);
+            $required = $path . implode(DIRECTORY_SEPARATOR, $dir);
+            if (!is_dir($required)) mkdir($required);
         }
     }
 }
