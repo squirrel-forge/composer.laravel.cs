@@ -1,6 +1,18 @@
 # composer.laravel.cs
 ## Squirrel-Forge Laravel Core Support
 
+### Table of Contents
+
+ - [Module information](#module-information)
+ - [Middleware configuration](#middleware-configuration)
+   - [Dynamic debug](#dynamic-debug)
+   - [Response headers](#response-headers)
+ - [Nested folder routing](#nested-folder-routing)
+ - [Moving the public directory](#moving-the-public-directory)
+ - [Directory locator](#directory-locator)
+
+## Module information
+
 Composer module: **squirrel-forge/lara-cs**
 
 Composer repository entry:
@@ -82,10 +94,45 @@ php artisan sqfcs:mvpub {target} {--cp=all|filename,dirname,...}
 
 Any *.php files that are copied and not linked, will have "../" replaced with the new relative path to the laravel root.
 
+**If you are moving/copying the public directory** and not linking, in your Kernels,
+set following code to let laravel know of the move:
+
+```php
+use function SquirrelForge\Laravel\CoreSupport\joinAndResolvePaths;
+/**
+ * Create a new HTTP kernel instance.
+ *
+ * @param  \Illuminate\Contracts\Foundation\Application  $app
+ * @param  \Illuminate\Routing\Router  $router
+ * @return void
+ */
+public function __construct(Application $app, Router $router)
+{
+    $app->usePublicPath(joinAndResolvePaths(base_path(), '../public/'));
+    parent::__construct($app, $router);
+}
+```
+
+```php
+use function SquirrelForge\Laravel\CoreSupport\joinAndResolvePaths;
+/**
+ * Create a new console kernel instance.
+ *
+ * @param  \Illuminate\Contracts\Foundation\Application  $app
+ * @param  \Illuminate\Contracts\Events\Dispatcher  $events
+ * @return void
+ */
+public function __construct(Application $app, Dispatcher $events)
+{
+    $app->usePublicPath(joinAndResolvePaths(base_path(), '../public/'));
+    parent::__construct($app, $events);
+}
+```
+
 ## Directory locator
 
-If you wish to use the directory locator services, you need
-to implement the code in your kernel constructors as following
+If you wish to use the directory locator service, you need
+to implement following code in your kernel constructors,
 to allow for setting the directories before laravel uses them.
 
 ```php
