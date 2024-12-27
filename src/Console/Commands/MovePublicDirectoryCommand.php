@@ -12,7 +12,7 @@ class MovePublicDirectoryCommand extends Command
     protected $signature = 'sqfcs:mvpub {target} {--cp=}';
 
     /** @var string $description The console command description. */
-    protected $description = 'Setups folders and env config outside of laravel root';
+    protected $description = 'Moves or links the public directory to a new location';
 
     /**
      * Execute the console command.
@@ -20,7 +20,7 @@ class MovePublicDirectoryCommand extends Command
      */
     public function handle()
     {
-        $messageAbort = 'Move laravel public directory command aborted.';
+        $messageAbort = 'Move/link laravel public directory command aborted.';
 
         // Get copy option
         $copyFiles = $this->option('cp');
