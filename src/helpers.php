@@ -68,6 +68,7 @@ if (!function_exists(__NAMESPACE__ . '\\requireStorageFolderStructure')) {
     function requireStorageFolderStructure(string $path, int $mask = 022): void
     {
         $path = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+        if (is_dir($path . 'logs')) return;
         $dirs = [
             ['app'],
             ['app', 'public'],

@@ -18,7 +18,12 @@ return [
          * Custom activators can be defined as functions and must be referenced with full namespacing,
          * or you may define the use array here in the config using a Closure value,
          * that will get called with two arguments:
-         * function($request, $middleware) { $middleware->activate('origin-name'); }
+         * function($request, $middleware):void { $middleware->activate('origin-name'); }
+         * You may also set this value via your service provider boot method, using:
+         * use Illuminate\Support\Facades\Config;
+         * Config::set('sqf-cs.debug.use', array_merge(Config::get('sqf-cs.debug.use'), [
+         *   function($request, $middleware):void { $middleware->activate('origin-name'); }
+         * ]));
          */
         'use' => preg_split('/[,;]+/', env('SQF_CS_USE', 'ip,range'), -1, PREG_SPLIT_NO_EMPTY),
 
@@ -72,7 +77,7 @@ return [
      */
     'headers' => [
         'X-Frame-Options' => 'deny',
-        'X-XSS-Protection' =>  '1; mode=block',
+        'X-XSS-Protection' => '1; mode=block',
         'X-Content-Type-Options' => 'nosniff',
         'Content-Security-Policy' => env('SQF_CS_CSP'),
         'X-Permitted-Cross-Domain-Policies' => 'none',

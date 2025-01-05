@@ -4,6 +4,8 @@
 ### Table of Contents
 
  - [Module information](#module-information)
+   - [Publishing the config](#publishing-the-config)
+   - [Example dotenv values](#example-dotenv-values)
  - [Middleware configuration](#middleware-configuration)
    - [Dynamic debug](#dynamic-debug)
    - [Response headers](#response-headers)
@@ -25,6 +27,29 @@ Composer repository entry:
 }
 ```
 
+### Publishing the config
+
+```shell
+php artisan vendor:publish --tag=sqf-cs
+```
+
+### Example dotenv values
+
+Example dotenv configuration, full list of values:
+
+```dotenv
+SQF_CS_USE=ip,range,keypass
+SQF_CS_ENV=X-CLIENT-IP,REMOTE_ADDR
+SQF_CS_IPS=000.000.000.000,0000:0000:0000:0000::0000:0000
+SQF_CS_RANGES=000.000.000.00/00,0000:00:0000:0:0:0:0:0/00
+SQF_CS_KEY=cxxa80quced65jg817xdxoalhhyn0blk
+SQF_CS_PASS=g2czb0w289zl9xiom6kcy1nc0bbyfiao
+SQF_CS_LIFETIME=Y-m-d-H
+SQF_CS_LIMIT=60
+SQF_CS_LOG=true
+SQF_CS_CSP="default-src 'self'; script-src 'self' 'unsafe-inline'"
+```
+
 ## Middleware configuration
 
 Check the [configuration](resources/config/config.php) for detailed option descriptions.
@@ -35,7 +60,7 @@ Check the [configuration](resources/config/config.php) for detailed option descr
 
 ### Response headers
 
-[Middleware](src/Http/Middleware/ResponseHeaders.php) that sets security headers for every request.
+[Middleware](src/Http/Middleware/ResponseHeaders.php) that sets global security headers for every response.
 
 ## Nested folder routing
 
@@ -68,7 +93,7 @@ RewriteRule ^/prefixed/path/favicon.ico$ favicon.ico [NC,QSA,L]
 RewriteRule ^/prefixed/path/robots.txt$ robots.txt [NC,QSA,L]
 ```
 
-Or the recommended generic variant, which allows dynamic prefixes:
+Or the recommended generic variant, which allows for dynamic prefixes:
 
 ```shell
 # Rewrite routed asset paths
@@ -96,6 +121,7 @@ php artisan sqfcs:mvpub {target} {--cp=all|filename,dirname,...}
 Any *.php files that are copied and not linked, will have "../" replaced with the new relative path to the laravel root.
 
 ### Moving the public directory
+
 If you must **move/copy** the public directory and *not link* it to another location,
 in your Kernels, set following code to let laravel know of the move:
 

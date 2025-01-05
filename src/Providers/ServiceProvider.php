@@ -39,6 +39,6 @@ class ServiceProvider extends Provider
         // Publish config
         $base_dir = dirname(__DIR__, 2);
         $config_src = implode(DIRECTORY_SEPARATOR, [$base_dir, 'resources', 'config', '']);
-        $this->publishes([$config_src . 'config.php' => config_path('sqf-cs.php')], 'config');
+        $this->publishes([$config_src . 'config.php' => config_path('sqf-cs.php')], ['sqf-cs', 'config']);
     }
 }
