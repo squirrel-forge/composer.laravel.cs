@@ -13,6 +13,12 @@ return [
     'debug' => [
 
         /**
+         * Register middleware.
+         * Set to false to disable the middleware.
+         */
+        'enabled' => true,
+
+        /**
          * Which activators to use.
          * Default are ip and range, if needed a keypass GET variable based activator can be added.
          * Custom activators can be defined as functions and must be referenced with full namespacing,
@@ -74,6 +80,7 @@ return [
      * and may return a value, or perform all actions and return null or void.
      * 'header-name' => function ($request, $response) { return 'value'; }
      * 'header-name' => function ($request, $response) { $response->header('name', 'value'); }
+     * To disable the middleware set the value to false, null or an empty array.
      */
     'headers' => [
         'X-Frame-Options' => 'deny',

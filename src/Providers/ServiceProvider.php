@@ -33,8 +33,14 @@ class ServiceProvider extends Provider
         }
 
         // Register middleware
-        $this->app->get('router')->pushMiddlewareToGroup('web', DynamicDebug::class);
-        $this->app->get('router')->pushMiddlewareToGroup('web', ResponseHeaders::class);
+        $this->app->get('router')->aliasMiddleware('sqf-cs-dd', DynamicDebug::class);
+        $this->app->get('router')->aliasMiddleware('sqf-cs-gh', ResponseHeaders::class);
+        if (config('sqf-cs.debug.enabled')) {
+            $this->app->get('router')->pushMiddlewareToGroup('web', DynamicDebug::class);
+        }
+        if (!empty(config('sqf-cs.headers'))) {
+            $this->app->get('router')->pushMiddlewareToGroup('web', ResponseHeaders::class);
+        }
 
         // Publish config
         $base_dir = dirname(__DIR__, 2);
