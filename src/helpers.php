@@ -14,7 +14,7 @@ if (!function_exists(__NAMESPACE__ . '\\getClientIp')) {
     function clientIp(Request $request = null): mixed
     {
         // Get ip from env values
-        $names = config('sqf-fs.debug.env');
+        $names = config('sqf-cs.debug.env');
         if (isset($names) && is_array($names)) {
             foreach ($names as $name) {
                 if (isset($_SERVER[$name])) return $_SERVER[$name];
