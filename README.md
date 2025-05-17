@@ -4,6 +4,7 @@
 ### Table of Contents
 
  - [Module information](#module-information)
+ - [Installation](#installation)
    - [Publishing the config](#publishing-the-config)
    - [Example dotenv values](#example-dotenv-values)
  - [Middleware configuration](#middleware-configuration)
@@ -16,6 +17,9 @@
 
 ## Module information
 
+This is a core level module, that only supplies a few actual features and
+mostly configuration and insight for routing and infrastructure requirements.
+
 Composer module: **squirrel-forge/lara-cs**
 
 Composer repository entry:
@@ -26,6 +30,8 @@ Composer repository entry:
     "no-api": true
 }
 ```
+
+## Installation
 
 ### Publishing the config
 
@@ -65,7 +71,7 @@ Check the [configuration](resources/config/config.php) for detailed option descr
 ## Nested folder routing
 
 If your laravel runs in a domain root, but is requested via cdn url rewrite inside a nested path,
-Then follow these instructions to ensure all requests arrive where they are supposed to.
+then follow these instructions to ensure all requests arrive where they are supposed to.
 
 Prefix your routes with the nested path:
 
@@ -93,7 +99,8 @@ RewriteRule ^/prefixed/path/favicon.ico$ favicon.ico [NC,QSA,L]
 RewriteRule ^/prefixed/path/robots.txt$ robots.txt [NC,QSA,L]
 ```
 
-Or the recommended generic variant, which allows for dynamic prefixes:
+Or the recommended generic variant, which allows for dynamic prefixes, but with a downside.  
+This does not allow the use of any defined slugs/paths in laravel routing as they will conflict:
 
 ```shell
 # Rewrite routed asset paths
@@ -106,11 +113,11 @@ RewriteRule ^(.*)robots.txt$ robots.txt [NC,QSA,L]
 
 ## Linking the public directory
 
-To copy or symlink your public directory to a new location, run the *sqfcs:mvpub* command.
+To copy or symlink your public directory to a new location, run the *sqfcs:mvpub* command.  
 Note that running this command from the appropriate user/context will prevent permission issues.
 
-The *target* can be relative to laravel root or system absolute.
-The *--cp* option defines, if and which files are copied instead of being linked.
+The *target* can be relative to laravel root or system absolute.  
+The *--cp* option defines, if and which files are copied instead of being linked.  
 The option respects only file and folder names nested directly in the public dir,
 though folders will be copied recursively.
 
@@ -118,13 +125,15 @@ though folders will be copied recursively.
 php artisan sqfcs:mvpub {target} {--cp=all|filename,dirname,...}
 ```
 
-Any *.php files that are copied and not linked, will have "../" replaced with the new relative path to the laravel root.
+Any *.php files that are copied and not linked,
+will have "../" replaced with the new relative path to the laravel root.
 
 ### Moving the public directory
 
 If you must **move/copy** the public directory and *not link* it to another location,
 in your Kernels, set following code to let laravel know of the move:
 
+*app/Http/Kernel.php*
 ```php
 use function SquirrelForge\Laravel\CoreSupport\joinAndResolvePaths;
 /**
@@ -141,6 +150,7 @@ public function __construct(Application $app, Router $router)
 }
 ```
 
+*app/Console/Kernel.php*
 ```php
 use function SquirrelForge\Laravel\CoreSupport\joinAndResolvePaths;
 /**
@@ -161,8 +171,10 @@ public function __construct(Application $app, Dispatcher $events)
 
 If you wish to use the directory locator service, you need
 to implement following code in your kernel constructors,
-to allow for setting the directories before laravel uses them.
+to allow for setting the directories before laravel uses them.  
+The locator will transition parent directories and search for the given folder/path.
 
+*app/Http/Kernel.php*
 ```php
 use SquirrelForge\Laravel\CoreSupport\Service as SqfCs;
 /**
@@ -180,6 +192,7 @@ public function __construct(Application $app, Router $router)
 }
 ```
 
+*app/Console/Kernel.php*
 ```php
 use SquirrelForge\Laravel\CoreSupport\Service as SqfCs;
 /**
