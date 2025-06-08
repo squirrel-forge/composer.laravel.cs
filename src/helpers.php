@@ -132,3 +132,22 @@ if (!function_exists(__NAMESPACE__ . '\\joinAndResolvePaths')) {
             ($trailing ? DIRECTORY_SEPARATOR : '');
     }
 }
+
+if (!function_exists(__NAMESPACE__ . '\\getPackageVersion')) {
+
+    /**
+     * Get composer package version
+     * @param string $name
+     * @param string $vendor
+     * @param string|null $root
+     * @return string|null
+     */
+    function getPackageVersion(string $name, string $vendor, string $root = null): ?string
+    {
+        if (empty($root)) $root = dirname(__DIR__, 3);
+        $json = implode(DIRECTORY_SEPARATOR, [$root, $vendor, $name, 'composer.json']);
+        if (!file_exists($json)) return null;
+        $json = json_decode(file_get_contents($json));
+        return $json->version;
+    }
+}

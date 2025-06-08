@@ -13,6 +13,9 @@ use SquirrelForge\Laravel\CoreSupport\Exceptions\DirectoryNotFoundException;
  */
 class Service {
 
+    /** @type string Package version. */
+    const VERSION = '0.8.0';
+
     /** @var null|Application $app Laravel application instance. */
     public static ?Application $app = null;
 
