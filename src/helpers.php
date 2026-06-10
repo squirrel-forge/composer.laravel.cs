@@ -11,7 +11,7 @@ if (!function_exists(__NAMESPACE__ . '\\getClientIp')) {
      * @param null|Request $request
      * @return mixed
      */
-    function clientIp(Request $request = null): mixed
+    function clientIp(?Request $request = null): mixed
     {
         // Get ip from env values
         $names = config('sqf-cs.debug.env');
@@ -142,7 +142,7 @@ if (!function_exists(__NAMESPACE__ . '\\getPackageVersion')) {
      * @param string|null $root
      * @return string|null
      */
-    function getPackageVersion(string $name, string $vendor, string $root = null): ?string
+    function getPackageVersion(string $name, string $vendor, ?string $root = null): ?string
     {
         if (empty($root)) $root = dirname(__DIR__, 3);
         $json = implode(DIRECTORY_SEPARATOR, [$root, $vendor, $name, 'composer.json']);

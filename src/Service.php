@@ -51,7 +51,7 @@ class Service {
      * @throws DirectoryNotFoundException
      * @throws InvalidLocateCallException
      */
-    public static function locateEnvDir(string $name, Application $app = null, string $base = null): void
+    public static function locateEnvDir(string $name, ?Application $app = null, ?string $base = null): void
     {
         if (static::$hasRunEnv) {
             throw new InvalidLocateCallException('Locate env can only be called once from the kernel constructor');
@@ -86,7 +86,7 @@ class Service {
      * @throws DirectoryNotFoundException
      * @throws InvalidLocateCallException
      */
-    public static function locateStorageDir(string $name, Application $app = null, string $base = null): void
+    public static function locateStorageDir(string $name, ?Application $app = null, ?string $base = null): void
     {
         if (static::$hasRunStorage) {
             throw new InvalidLocateCallException('Locate storage can only be called once from the kernel constructor');
@@ -118,7 +118,7 @@ class Service {
      * @throws MissingBaseDirException
      * @throws MissingAppException
      */
-    protected static function validate(string $base = null): string
+    protected static function validate(?string $base = null): string
     {
         if (!isset(static::$app)) throw new MissingAppException('Service::$app must be set before use');
         if (empty($base)) {
@@ -135,7 +135,7 @@ class Service {
      * @param Application|null $app
      * @return void
      */
-    protected static function defaults(Application $app = null): void
+    protected static function defaults(?Application $app = null): void
     {
         if ($app && !static::$app) static::$app = $app;
         if (!static::$baseDir) static::$baseDir = base_path();
