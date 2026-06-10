@@ -1,7 +1,7 @@
 {
     "name": "squirrel-forge/lara-cs",
     "description": "Squirrel-Forge Laravel Core Support",
-    "version": "0.8.0",
+    "version": "0.9.0",
     "type": "library",
     "license": "MIT",
     "authors": [
@@ -26,19 +26,11 @@
         ]
     },
     "minimum-stability": "dev",
-    "prefer-stable": true,
     "extra": {
         "laravel": {
             "providers": [
                 "SquirrelForge\\Laravel\\CoreSupport\\Providers\\ServiceProvider"
             ]
         }
-    },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "git@github.com:squirrel-forge/composer.laravel.cs.git",
-            "no-api": true
-        }
-    ]
+    }
 }
