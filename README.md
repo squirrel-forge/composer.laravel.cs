@@ -54,6 +54,7 @@ SQF_CS_LIFETIME=Y-m-d-H
 SQF_CS_LIMIT=60
 SQF_CS_LOG=true
 SQF_CS_CSP="default-src 'self'; script-src 'self' 'unsafe-inline'"
+SQF_CS_CSRF=true
 ```
 
 ## Middleware configuration
@@ -67,6 +68,10 @@ Check the [configuration](resources/config/config.php) for detailed option descr
 ### Response headers
 
 [Middleware](src/Http/Middleware/ResponseHeaders.php) that sets global security headers for every response.
+
+### Prevent request forgery
+
+[Middleware](src/Http/Middleware/PreventRequestForgeryExtended.php) that provides extended options for the csrf token.
 
 ## Nested folder routing
 
@@ -114,7 +119,8 @@ RewriteRule ^(.*)robots.txt$ robots.txt [NC,QSA,L]
 ## Linking the public directory
 
 To copy or symlink your public directory to a new location, run the *sqfcs:mvpub* command.  
-Note that running this command from the appropriate user/context will prevent permission issues.
+Note that running this command from the appropriate user/context will prevent permission issues,
+for example when running in a docker container you must run the command inside the container context.
 
 The *target* can be relative to laravel root or system absolute.  
 The *--cp* option defines, if and which files are copied instead of being linked.  
@@ -131,81 +137,65 @@ will have "../" replaced with the new relative path to the laravel root.
 ### Moving the public directory
 
 If you must **move/copy** the public directory and *not link* it to another location,
-in your Kernels, set following code to let laravel know of the move:
+set following code in your *bootstrap/app.php* to let laravel know of the move:
 
-*app/Http/Kernel.php*
+#### Laravel 11+ bootstrap version
+
+*bootstrap/app.php*
 ```php
+// Additional usages
 use function SquirrelForge\Laravel\CoreSupport\joinAndResolvePaths;
-/**
- * Create a new HTTP kernel instance.
- *
- * @param  \Illuminate\Contracts\Foundation\Application  $app
- * @param  \Illuminate\Routing\Router  $router
- * @return void
- */
-public function __construct(Application $app, Router $router)
-{
-    $app->usePublicPath(joinAndResolvePaths(base_path(), '../public/'));
-    parent::__construct($app, $router);
-}
+
+// Setup app
+$app = Application::configure(basePath: dirname(__DIR__))
+    // ...
+    ->create();
+
+// Define base path
+$basePath = base_path();
+
+// Move public path
+$app->usePublicPath(joinAndResolvePaths($basePath, '../online/'));
+
+// Return actual instance
+return $app;
+
 ```
 
-*app/Console/Kernel.php*
+## Storage and environment directories
+
+You may use the core helpers as following to set a custom storage
+and/or environment path inside the *bootstrap/app.php*.
+
+#### Laravel 11+ boostrap version
+
+*bootstrap/app.php*
 ```php
+// Additional usages
 use function SquirrelForge\Laravel\CoreSupport\joinAndResolvePaths;
-/**
- * Create a new console kernel instance.
- *
- * @param  \Illuminate\Contracts\Foundation\Application  $app
- * @param  \Illuminate\Contracts\Events\Dispatcher  $events
- * @return void
- */
-public function __construct(Application $app, Dispatcher $events)
-{
-    $app->usePublicPath(joinAndResolvePaths(base_path(), '../public/'));
-    parent::__construct($app, $events);
-}
-```
+use function SquirrelForge\Laravel\CoreSupport\requireStorageFolderStructure;
 
-## Directory locator
+// Setup app
+$app = Application::configure(basePath: dirname(__DIR__))
+    // ...
+    ->create();
 
-If you wish to use the directory locator service, you need
-to implement following code in your kernel constructors,
-to allow for setting the directories before laravel uses them.  
-The locator will transition parent directories and search for the given folder/path.
+// Define base path
+$basePath = base_path();
 
-*app/Http/Kernel.php*
-```php
-use SquirrelForge\Laravel\CoreSupport\Service as SqfCs;
-/**
- * Create a new HTTP kernel instance.
- *
- * @param  \Illuminate\Contracts\Foundation\Application  $app
- * @param  \Illuminate\Routing\Router  $router
- * @return void
- */
-public function __construct(Application $app, Router $router)
-{
-    SqfCs::locateEnvDir('env', $app);
-    SqfCs::locateStorageDir('cache', $app);
-    parent::__construct($app, $router);
-}
-```
+// Setup env directory
+$app->useEnvironmentPath(joinAndResolvePaths($basePath, '../conf/'));
 
-*app/Console/Kernel.php*
-```php
-use SquirrelForge\Laravel\CoreSupport\Service as SqfCs;
-/**
- * Create a new console kernel instance.
- *
- * @param  \Illuminate\Contracts\Foundation\Application  $app
- * @param  \Illuminate\Contracts\Events\Dispatcher  $events
- * @return void
- */
-public function __construct(Application $app, Dispatcher $events)
-{
-    SqfCs::locateEnvDir('env', $app);
-    SqfCs::locateStorageDir('cache', $app);
-    parent::__construct($app, $events);
-}
+// Define storage path
+$storagePath = joinAndResolvePaths($basePath, '../cache/');
+
+// Require storage folder structure
+requireStorageFolderStructure($storagePath);
+
+// Setup storage directory
+$app->useStoragePath($storagePath);
+
+// Return actual instance
+return $app;
+
 ```
