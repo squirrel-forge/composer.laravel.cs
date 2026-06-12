@@ -7,13 +7,8 @@ use Illuminate\Foundation\Events\DiagnosingHealth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Event;
 
-/**
- * Version constant
- */
-$version_const = __NAMESPACE__ . '\VERSION';
-if (!defined($version_const)) {
-    define($version_const, '0.19.0');
-}
+/** @type string Package version. */
+const VERSION = '0.20.0';
 
 if (!function_exists(__NAMESPACE__ . '\\getClientIp')) {
 
