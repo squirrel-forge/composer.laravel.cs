@@ -2,7 +2,10 @@
 
 namespace SquirrelForge\Laravel\CoreSupport;
 
+use Closure;
+use Illuminate\Foundation\Events\DiagnosingHealth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Event;
 
 if (!function_exists(__NAMESPACE__ . '\\getClientIp')) {
 
@@ -68,9 +71,10 @@ if (!function_exists(__NAMESPACE__ . '\\requireStorageFolderStructure')) {
     function requireStorageFolderStructure(string $path, int $mask = 022): void
     {
         $path = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
-        if (is_dir($path . 'logs')) return;
+        if (is_dir($path . 'framework')) return;
         $dirs = [
             ['app'],
+            ['app', 'private'],
             ['app', 'public'],
             ['framework'],
             ['framework', 'cache'],
@@ -149,5 +153,48 @@ if (!function_exists(__NAMESPACE__ . '\\getPackageVersion')) {
         if (!file_exists($json)) return null;
         $json = json_decode(file_get_contents($json));
         return $json->version;
+    }
+}
+
+if (!function_exists(__NAMESPACE__ . '\\getHealthRouteHandler')) {
+
+    /**
+     * Get health route handler
+     * @return Closure
+     */
+    function getHealthRouteHandler(): Closure
+    {
+        /**
+         * Handle health route request
+         * @param Request $request
+         * @return string|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\JsonResponse|\Illuminate\Http\Response
+         */
+        return function (Request $request) {
+            $exception = null;
+
+            try {
+                Event::dispatch(new DiagnosingHealth);
+            } catch (\Throwable $e) {
+                if (app()->hasDebugModeEnabled()) {
+                    throw $e;
+                }
+
+                report($e);
+
+                $exception = $e->getMessage();
+            }
+
+            $status = $exception ? 500 : 200;
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'status' => $exception ? 'down' : 'up',
+                ], $status);
+            }
+
+            return response(view('sqf-cs::health-up', [
+                'exception' => $exception,
+            ]), status: $status);
+        };
     }
 }
