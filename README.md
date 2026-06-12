@@ -10,10 +10,11 @@
  - [Middleware configuration](#middleware-configuration)
    - [Dynamic debug](#dynamic-debug)
    - [Response headers](#response-headers)
+   - [Prevent request forgery](#prevent-request-forgery)
  - [Nested folder routing](#nested-folder-routing)
  - [Linking the public directory](#linking-the-public-directory)
    - [Moving the public directory](#moving-the-public-directory)
- - [Directory locator](#directory-locator)
+ - [Storage and environment directories](#storage-and-environment-directories)
 
 ## Module information
 
