@@ -55,7 +55,7 @@ class ServiceProvider extends Provider
         $this->loadViewsFrom($view_src, 'sqf-cs');
 
         // Publish views
-        $this->publishes([$view_src => resource_path('views/vendor/sqf-cs')], 'views');
+        $this->publishes([$view_src => resource_path('views/vendor/sqf-cs')], ['sqf-cs', 'views']);
 
         // Publish config
         $config_src = implode(DIRECTORY_SEPARATOR, [$base_dir, 'resources', 'config', '']);
