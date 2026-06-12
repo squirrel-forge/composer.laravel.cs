@@ -14,7 +14,7 @@ return [
 
         /**
          * Register middleware.
-         * Set to false to disable the middleware.
+         * Set false, to disable the middleware.
          */
         'enabled' => true,
 
@@ -71,6 +71,27 @@ return [
          * When enabled every activation is logged as an info message.
          */
         'log' => env('SQF_CS_LOG', false),
+    ],
+
+    /**
+     * Csrf options.
+     * This allows setting the csrf cookie to httpOnly=true,
+     * to allow passing of security audits that flag the token as a false positive.
+     */
+    'csrf' => [
+
+        /**
+         * Illuminate\Foundation\Http\Middleware\PreventRequestForgery middleware
+         * is replaced with an extended version, set false to disable this and
+         * revert to the default core methods and settings.
+         */
+        'enabled' => true,
+
+        /**
+         * Enforce the csrf cookie to be http only.
+         * Usually required for security audit reasons and not for actual security.
+         */
+        'httpOnly' => env('SQF_CS_CSRF', false),
     ],
 
     /**
