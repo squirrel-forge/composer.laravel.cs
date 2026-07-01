@@ -11,6 +11,7 @@
    - [Dynamic debug](#dynamic-debug)
    - [Response headers](#response-headers)
    - [Prevent request forgery](#prevent-request-forgery)
+ - [Health route customization](#health-route-customization)
  - [Nested folder routing](#nested-folder-routing)
  - [Linking the public directory](#linking-the-public-directory)
    - [Moving the public directory](#moving-the-public-directory)
@@ -73,6 +74,38 @@ Check the [configuration](resources/config/config.php) for detailed option descr
 ### Prevent request forgery
 
 [Middleware](src/Http/Middleware/PreventRequestForgeryExtended.php) that provides extended options for the csrf token.
+
+## Health route customization
+
+Disable the default route by removing the "health" argument in your bootstrap:
+
+*bootstrap/app.php*
+```php
+    ->withRouting(
+        health: '/up',
+    )
+```
+
+And then add the custom route handler to your application routes:
+
+*routes/web.php*
+```php
+// Additional usages
+use function SquirrelForge\Laravel\CoreSupport\getHealthRouteHandler;
+
+// Bind the route
+Route::get('/up', getHealthRouteHandler(
+    template: 'sqf-cs::health-up',
+    jsonUp: ['status' => 'up'],
+    jsonDown: ['status' => 'down'],
+));
+```
+
+You may also use the modules default template and publish it, to customize your html health view.
+
+```shell
+php artisan vendor:publish --tag=sqf-cs
+```
 
 ## Nested folder routing
 

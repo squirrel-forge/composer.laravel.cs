@@ -163,16 +163,19 @@ if (!function_exists(__NAMESPACE__ . '\\getHealthRouteHandler')) {
 
     /**
      * Get health route handler
+     * @param string|null $template
+     * @param array|null $jsonUp
+     * @param array|null $jsonDown
      * @return Closure
      */
-    function getHealthRouteHandler(): Closure
+    function getHealthRouteHandler(?string $template, ?array $jsonUp, ?array $jsonDown): Closure
     {
         /**
          * Handle health route request
          * @param Request $request
          * @return string|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\JsonResponse|\Illuminate\Http\Response
          */
-        return function (Request $request) {
+        return function (Request $request) use ($template, $jsonUp, $jsonDown) {
             $exception = null;
 
             try {
@@ -190,12 +193,15 @@ if (!function_exists(__NAMESPACE__ . '\\getHealthRouteHandler')) {
             $status = $exception ? 500 : 200;
 
             if ($request->expectsJson()) {
-                return response()->json([
-                    'status' => $exception ? 'down' : 'up',
-                ], $status);
+                if ($exception) {
+                    $response = $jsonDown ?? ['status' => 'down'];
+                } else {
+                    $response = $jsonUp ?? ['status' => 'up'];
+                }
+                return response()->json($response, $status);
             }
 
-            return response(view('sqf-cs::health-up', [
+            return response(view($template ?? 'sqf-cs::health-up', [
                 'exception' => $exception,
             ]), status: $status);
         };
