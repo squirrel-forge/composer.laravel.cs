@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Event;
 
 /** @type string Package version. */
-const VERSION = '0.27.0';
+const VERSION = '0.28.0';
 
 if (!function_exists(__NAMESPACE__ . '\\getClientIp')) {
 
@@ -219,7 +219,7 @@ if (!function_exists(__NAMESPACE__ . '\\sqfAsset')) {
      * @param bool|null $secure
      * @return string
      */
-    function sqfAsset(string $path, bool $pathOnly = true, bool $cache = true, ?bool $secure = true ): string
+    function sqfAsset(string $path, bool $pathOnly = true, bool $cache = true, ?bool $secure = null ): string
     {
         // Parse the default asset url result
         $url = parse_url(asset($path, $secure));
