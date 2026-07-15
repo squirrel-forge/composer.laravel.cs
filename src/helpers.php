@@ -3,12 +3,13 @@
 namespace SquirrelForge\Laravel\CoreSupport;
 
 use Closure;
+use http\Url;
 use Illuminate\Foundation\Events\DiagnosingHealth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Event;
 
 /** @type string Package version. */
-const VERSION = '0.26.0';
+const VERSION = '0.27.0';
 
 if (!function_exists(__NAMESPACE__ . '\\getClientIp')) {
 
@@ -242,6 +243,6 @@ if (!function_exists(__NAMESPACE__ . '\\sqfAsset')) {
         }
 
         // Return updated url
-        return http_build_url($url);
+        return (string)new Url($url);
     }
 }
