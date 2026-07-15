@@ -1,7 +1,7 @@
 {
     "name": "squirrel-forge/lara-cs",
     "description": "Squirrel-Forge Laravel Core Support",
-    "version": "0.24.0",
+    "version": "0.25.0",
     "type": "library",
     "license": "MIT",
     "authors": [
@@ -15,7 +15,6 @@
     "require": {
         "php": "^8.3",
         "ext-mbstring": "*",
-        "ext-http": "*",
         "laravel/framework": ">=11.0"
     },
     "autoload": {
