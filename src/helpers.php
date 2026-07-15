@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Event;
 
 /** @type string Package version. */
-const VERSION = '0.22.0';
+const VERSION = '0.23.0';
 
 if (!function_exists(__NAMESPACE__ . '\\getClientIp')) {
 
@@ -168,7 +168,7 @@ if (!function_exists(__NAMESPACE__ . '\\getHealthRouteHandler')) {
      * @param array|null $jsonDown
      * @return Closure
      */
-    function getHealthRouteHandler(?string $template, ?array $jsonUp, ?array $jsonDown): Closure
+    function getHealthRouteHandler(?string $template = null, ?array $jsonUp = null, ?array $jsonDown = null): Closure
     {
         /**
          * Handle health route request
