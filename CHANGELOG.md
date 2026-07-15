@@ -4,5 +4,5 @@
 
 ## Changelog
 
-### 0.25.0
+### 0.26.0
 Current prototype release.
