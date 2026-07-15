@@ -1,4 +1,5 @@
 # composer.laravel.cs
+
 ## Squirrel-Forge Laravel Core Support
 
 ### Table of Contents
@@ -19,7 +20,7 @@
 
 ## Module information
 
-This is a core level module, that only supplies a few actual features and
+This is a core level module, that only supplies a few actual features. It contains
 mostly configuration and insight for routing and infrastructure requirements.
 
 Composer module: **squirrel-forge/lara-cs**

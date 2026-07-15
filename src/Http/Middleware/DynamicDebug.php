@@ -104,11 +104,11 @@ class DynamicDebug {
      */
     public function activate(string $origin): void
     {
-        if (empty($origin)) {
-            throw new DynamicDebugActivatorOriginInvalidException('Failed with invalid activation origin');
-        }
         if ($this->activated) {
             throw new DynamicDebugAlreadyActiveException( 'Already activated by: ' . $this->origin );
+        }
+        if (empty($origin)) {
+            throw new DynamicDebugActivatorOriginInvalidException('Failed with invalid activation origin');
         }
         $this->activated = true;
         $this->origin = $origin;
@@ -117,7 +117,7 @@ class DynamicDebug {
     /**
      * Activate by ip match
      * @param Request $request
-     * @return  void
+     * @return void
      * @throws DynamicDebugActivatorOriginInvalidException
      * @throws DynamicDebugAlreadyActiveException
      */

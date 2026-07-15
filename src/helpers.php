@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Event;
 
 /** @type string Package version. */
-const VERSION = '0.20.0';
+const VERSION = '0.22.0';
 
 if (!function_exists(__NAMESPACE__ . '\\getClientIp')) {
 

@@ -11,8 +11,8 @@ class PreventRequestForgeryExtended extends PreventRequestForgery {
      * Replace the core::newCookie method
      * Create a new "XSRF-TOKEN" cookie that contains the CSRF token.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  array  $config
+     * @param \Illuminate\Http\Request $request
+     * @param array $config
      * @return \Symfony\Component\HttpFoundation\Cookie
      */
     protected function newCookie($request, $config)
