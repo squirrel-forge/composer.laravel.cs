@@ -128,7 +128,7 @@ Following some usage examples:
 <!-- Relative path including the cache breaker -->
 <img src="{{ sqfAsset('/img/header.jpg') }}" alt="" />
 
-<!-- Absolute without the cache breaker even if enabled globally -->
+<!-- Absolute url without the cache breaker even if enabled globally -->
 <img src="{{ sqfAsset('/img/header.jpg', false, false) }}" alt="" />
 ```
 

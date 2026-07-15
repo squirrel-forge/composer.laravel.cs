@@ -1,6 +1,6 @@
 <?php
 
-use function SquirrelForge\Laravel\CoreSupport\sqfAsset as asset;
+use function SquirrelForge\Laravel\CoreSupport\sqfAsset as assetActual;
 
 if (!function_exists('sqfAsset')) {
 
@@ -14,6 +14,6 @@ if (!function_exists('sqfAsset')) {
      */
     function sqfAsset(string $path, bool $pathOnly = true, bool $cache = true, ?bool $secure = true): string
     {
-        return asset($path, $pathOnly, $cache, $secure);
+        return assetActual($path, $pathOnly, $cache, $secure);
     }
 }
