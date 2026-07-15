@@ -14,6 +14,7 @@
    - [Prevent request forgery](#prevent-request-forgery)
  - [Health route customization](#health-route-customization)
  - [Nested folder routing](#nested-folder-routing)
+ - [Extended asset helper](#extended-asset-helper)
  - [Linking the public directory](#linking-the-public-directory)
    - [Moving the public directory](#moving-the-public-directory)
  - [Storage and environment directories](#storage-and-environment-directories)
@@ -106,6 +107,29 @@ You may also use the modules default template and publish it, to customize your 
 
 ```shell
 php artisan vendor:publish --tag=sqf-cs
+```
+
+## Extended asset helper
+
+The module exposes a global asset helper *sqfAsset()* that uses the native laravel asset helper,
+but provides extended functionality.
+
+Asset cache breaking parameter, can be enabled and set via following env value:
+
+```dotenv
+SQF_CS_ASSET_VERSION=1
+```
+
+A more detailed explanation for the caching parameter can be found in the [configuration](resources/config/config.php).
+
+Following some usage examples:
+
+```bladehtml
+<!-- Relative path including the cache breaker -->
+<img src="{{ sqfAsset('/img/header.jpg') }}" alt="" />
+
+<!-- Absolute without the cache breaker even if enabled globally -->
+<img src="{{ sqfAsset('/img/header.jpg', false, false) }}" alt="" />
 ```
 
 ## Nested folder routing

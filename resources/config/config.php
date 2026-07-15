@@ -95,6 +95,40 @@ return [
     ],
 
     /**
+     * Asset helper options.
+     * Provides an extended alternative for the native laravel asset() helper.
+     * Allows for a custom caching/version parameter value pair to be set,
+     * that circumvents external/cdn caching that cannot be controlled directly.
+     */
+    'assets' => [
+
+        /**
+         * Cache breaking paramter options.
+         */
+        'cache' => [
+
+            /**
+             * Caching parameter name, can be set empty,
+             * in which case the value will be used as the query key.
+             */
+            'name' => 'v',
+
+            /**
+             * Caching parameter value, should be set manually via .env file.
+             * Can be any GET-parameter compatible value, typically an incrementing integer.
+             * If using string values you should urlencode the value to prevent issues.
+             */
+            'value' => env('SQF_CS_ASSET_VERSION'),
+        ],
+
+        /**
+         * Url parts to unset when using the helper with $pathOnly = true argument.
+         * Refers to the parts that php native function parse_url() provides.
+         */
+        'unset' => ['scheme', 'host', 'port', 'user', 'pass'],
+    ],
+
+    /**
      * Global response headers.
      * These security headers are set for every response delivered by laravel.
      * Values can be set as closures and receive two arguments: request and response objects;

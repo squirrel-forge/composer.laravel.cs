@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Event;
 
 /** @type string Package version. */
-const VERSION = '0.23.0';
+const VERSION = '0.24.0';
 
 if (!function_exists(__NAMESPACE__ . '\\getClientIp')) {
 
@@ -205,5 +205,43 @@ if (!function_exists(__NAMESPACE__ . '\\getHealthRouteHandler')) {
                 'exception' => $exception,
             ]), status: $status);
         };
+    }
+}
+
+if (!function_exists(__NAMESPACE__ . '\\sqfAsset')) {
+
+    /**
+     * Resolve laravel asset
+     * @param string $path
+     * @param bool $pathOnly
+     * @param bool $cache
+     * @param bool|null $secure
+     * @return string
+     */
+    function sqfAsset(string $path, bool $pathOnly = true, bool $cache = true, ?bool $secure = true ): string
+    {
+        // Parse the default asset url result
+        $url = parse_url(asset($path, $secure));
+
+        // Remove all parts we do not want for the path only option
+        $unset = config('sqf-cs.assets.unset');
+        if ($pathOnly && !empty($unset)) {
+            foreach ($unset as $key) {
+                unset($url[$key]);
+            }
+        }
+
+        // Append query caching value if configured
+        $cacheValue = config('sqf-cs.assets.cache.value');
+        if ($cache && !empty($cacheValue)) {
+            $query = [];
+            if (!empty($url['query'])) parse_str($url['query'], $query);
+            $cacheName = config('sqf-cs.assets.cache.name');
+            $query[!empty($cacheName) ? $cacheName : $cacheValue] = $cacheValue ?? '';
+            $url['query'] = http_build_query($query);
+        }
+
+        // Return updated url
+        return http_build_url($url);
     }
 }
