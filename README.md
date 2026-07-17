@@ -183,11 +183,12 @@ for example when running in a docker container you must run the command inside t
 
 The *target* can be relative to laravel root or system absolute.  
 The *--cp* option defines, if and which files are copied instead of being linked.  
+The *--dp* option defines the permissions if any part of the target path must be created.
 The option respects only file and folder names nested directly in the public dir,
 though folders will be copied recursively.
 
 ```shell
-php artisan sqfcs:mvpub {target} {--cp=all|filename,dirname,...}
+php artisan sqfcs:mvpub {target} {--cp=all|filename,dirname,...} {--dp=0755}
 ```
 
 Any *.php files that are copied and not linked,

@@ -9,7 +9,7 @@ use function SquirrelForge\Laravel\CoreSupport\joinAndResolvePaths;
 class MovePublicDirectoryCommand extends Command
 {
     /** @var string $signature The name and signature of the console command. */
-    protected $signature = 'sqfcs:mvpub {target} {--cp=}';
+    protected $signature = 'sqfcs:mvpub {target : Relative or absolute path to target directory} {--cp= : Copy all|filename,dirname,...} {--dp=0755 : Target directory permissions on creation}';
 
     /** @var string $description The console command description. */
     protected $description = 'Moves or links the public directory to a new location';
@@ -43,8 +43,11 @@ class MovePublicDirectoryCommand extends Command
             $target = joinAndResolvePaths($target);
         }
 
+        // Get target permission option
+        $targetPermisson = $this->option('dp');
+
         // Require target path
-        if (!$this->requireTargetPath($target)) {
+        if (!$this->requireTargetPath($target, $targetPermisson)) {
             $this->error($messageAbort);
             return;
         }
@@ -168,14 +171,16 @@ class MovePublicDirectoryCommand extends Command
     /**
      * Require target directory
      * @param string $target
+     * @param string $chmod
      * @return bool
      */
-    protected function requireTargetPath(string $target): bool
+    protected function requireTargetPath(string $target, string $chmod = '0755'): bool
     {
         if (!File::isDirectory($target)) {
+            $chmod = (empty($chmod) ? 0755 : octdec($chmod));
             $message = 'The target directory (' . $target . ') does not exist, create it?';
             if (!$this->confirm($message, true)) return false;
-            File::makeDirectory($target, 0755, true);
+            File::makeDirectory($target, $chmod, true);
         }
         return true;
     }
