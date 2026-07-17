@@ -12,7 +12,7 @@ if (!function_exists('sqfAsset')) {
      * @param bool|null $secure
      * @return string
      */
-    function sqfAsset(string $path, bool $pathOnly = true, bool $cache = true, ?bool $secure = true): string
+    function sqfAsset(string $path, bool $pathOnly = true, bool $cache = true, ?bool $secure = null): string
     {
         return assetActual($path, $pathOnly, $cache, $secure);
     }
