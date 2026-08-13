@@ -3,7 +3,7 @@
 namespace SquirrelForge\Laravel\CoreSupport;
 
 use Closure;
-use http\Url;
+use League\Uri\Http as HttpUri;
 use Illuminate\Foundation\Events\DiagnosingHealth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Event;
@@ -222,13 +222,17 @@ if (!function_exists(__NAMESPACE__ . '\\sqfAsset')) {
     function sqfAsset(string $path, bool $pathOnly = true, bool $cache = true, ?bool $secure = null ): string
     {
         // Parse the default asset url result
-        $url = parse_url(asset($path, $secure));
+        $asset = asset($path, $secure);
+        $url = HttpUri::new($asset);
 
         // Remove all parts we do not want for the path only option
         $unset = config('sqf-cs.assets.unset');
         if ($pathOnly && !empty($unset)) {
             foreach ($unset as $key) {
-                unset($url[$key]);
+                $method = 'with' . ucfirst($key);
+                $arg = $key === 'port' ? null : '';
+                if (!method_exists($url, $method)) continue;
+                $url = $url->{$method}($arg);
             }
         }
 
@@ -236,13 +240,13 @@ if (!function_exists(__NAMESPACE__ . '\\sqfAsset')) {
         $cacheValue = config('sqf-cs.assets.cache.value');
         if ($cache && !empty($cacheValue)) {
             $query = [];
-            if (!empty($url['query'])) parse_str($url['query'], $query);
+            if (!empty($url->getQuery())) parse_str($url->getQuery(), $query);
             $cacheName = config('sqf-cs.assets.cache.name');
             $query[!empty($cacheName) ? $cacheName : $cacheValue] = $cacheValue ?? '';
-            $url['query'] = http_build_query($query);
+            $url = $url->withQuery(http_build_query($query));
         }
 
         // Return updated url
-        return (string)new Url($url);
+        return (string)$url;
     }
 }

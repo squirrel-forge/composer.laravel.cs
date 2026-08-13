@@ -125,7 +125,7 @@ return [
          * Url parts to unset when using the helper with $pathOnly = true argument.
          * Refers to the parts that php native function parse_url() provides.
          */
-        'unset' => ['scheme', 'host', 'port', 'user', 'pass'],
+        'unset' => ['scheme', 'host', 'port', 'userInfo'],
     ],
 
     /**
