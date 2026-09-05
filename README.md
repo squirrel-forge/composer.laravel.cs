@@ -153,25 +153,15 @@ ASSET_URL=/prefixed/path/
 
 To allow all your public assets to be accessible even when requested from a virtual subdirectory,
 add following rules to your htaccess after the authorization header and before the trailing slash redirect.
-
-```shell
-# Rewrite routed asset paths
-RewriteRule ^/prefixed/path/css/(.*)$ css/$2 [NC,QSA,L]
-RewriteRule ^/prefixed/path/img/(.*)$ img/$2 [NC,QSA,L]
-RewriteRule ^/prefixed/path/js/(.*)$ js/$2 [NC,QSA,L]
-RewriteRule ^/prefixed/path/favicon.ico$ favicon.ico [NC,QSA,L]
-RewriteRule ^/prefixed/path/robots.txt$ robots.txt [NC,QSA,L]
-```
-
-Or the recommended generic variant, which allows for dynamic prefixes, but with a downside.  
+The recommended generic variant, which allows for dynamic prefixes, but with a downside.  
 This does not allow the use of any defined slugs/paths in laravel routing as they will conflict:
 
 ```shell
-# Rewrite routed asset paths
-RewriteRule ^(.*)css/(.*)$ css/$2 [NC,QSA,L]
-RewriteRule ^(.*)img/(.*)$ img/$2 [NC,QSA,L]
-RewriteRule ^(.*)js/(.*)$ js/$2 [NC,QSA,L]
+RewriteCond %{DOCUMENT_ROOT}/static/$2 -f
+RewriteRule ^(.*)js/(.*)$ static/$2 [NC,QSA,L]
+RewriteCond %{DOCUMENT_ROOT}/favicon.ico -f
 RewriteRule ^(.*)favicon.ico$ favicon.ico [NC,QSA,L]
+RewriteCond %{DOCUMENT_ROOT}/robots.txt -f
 RewriteRule ^(.*)robots.txt$ robots.txt [NC,QSA,L]
 ```
 
@@ -215,7 +205,7 @@ $app = Application::configure(basePath: dirname(__DIR__))
 $basePath = base_path();
 
 // Move public path
-$app->usePublicPath(joinAndResolvePaths($basePath, '../online/'));
+$app->usePublicPath(joinAndResolvePaths($basePath, '../online'));
 
 // Return actual instance
 return $app;
@@ -244,10 +234,10 @@ $app = Application::configure(basePath: dirname(__DIR__))
 $basePath = base_path();
 
 // Setup env directory
-$app->useEnvironmentPath(joinAndResolvePaths($basePath, '../conf/'));
+$app->useEnvironmentPath(joinAndResolvePaths($basePath, '../conf'));
 
 // Define storage path
-$storagePath = joinAndResolvePaths($basePath, '../cache/');
+$storagePath = joinAndResolvePaths($basePath, '../cache');
 
 // Require storage folder structure
 requireStorageFolderStructure($storagePath);

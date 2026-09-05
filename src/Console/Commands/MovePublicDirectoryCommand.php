@@ -4,10 +4,13 @@ namespace SquirrelForge\Laravel\CoreSupport\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
+use SquirrelForge\Laravel\CoreSupport\Console\Traits\CommandHelpersTrait;
 use function SquirrelForge\Laravel\CoreSupport\joinAndResolvePaths;
 
 class MovePublicDirectoryCommand extends Command
 {
+    use CommandHelpersTrait;
+
     /** @var string $signature The name and signature of the console command. */
     protected $signature = 'sqfcs:mvpub {target : Relative or absolute path to target directory} {--cp= : Copy all|filename,dirname,...} {--dp=0755 : Target directory permissions on creation}';
 
@@ -20,8 +23,6 @@ class MovePublicDirectoryCommand extends Command
      */
     public function handle()
     {
-        $messageAbort = 'Move/link laravel public directory command aborted.';
-
         // Get copy option
         $copyFiles = $this->option('cp');
         if (!empty($copyFiles)) {
@@ -33,6 +34,7 @@ class MovePublicDirectoryCommand extends Command
         } else {
             $copyFiles = false;
         }
+        $messageAbort = ($copyFiles ? 'Move' : 'Link') .' laravel public directory command aborted.';
 
         // Resolve target path
         $target = $this->argument('target');
@@ -65,7 +67,7 @@ class MovePublicDirectoryCommand extends Command
         // Link all folders
         $this->linkOrCopyFolders($target, $copyFiles);
 
-        $this->info('Public directory copied/linked to:');
+        $this->info('Public directory ' .($copyFiles ? 'copied' : 'linked') . ' to:');
         $this->line('  ' . $target);
     }
 
@@ -84,8 +86,10 @@ class MovePublicDirectoryCommand extends Command
             File::delete($target);
             if ($copy === true || is_array($copy) && in_array($dirname, $copy)) {
                 File::copyDirectory($src, $target);
+                $this->verboseOutput('Copied directory ' . $src . ' to ' . $target);
             } else {
                 File::link($src, $target);
+                $this->verboseOutput('Linked directory ' . $src . ' to ' . $target);
             }
         }
     }
@@ -98,9 +102,7 @@ class MovePublicDirectoryCommand extends Command
      */
     protected function linkOrCopyFiles(string $path, bool|array $copy = false): void
     {
-        /**
-         * @type {\Symfony\Component\Finder\SplFileInfo[]}
-         */
+        /** @type {\Symfony\Component\Finder\SplFileInfo[]} */
         $publicFiles = File::files(public_path(), true);
         foreach ($publicFiles as $file) {
             $name = $file->getFilename();
@@ -112,11 +114,14 @@ class MovePublicDirectoryCommand extends Command
                     $relative = $this->getRelativePath($src, $target);
                     $updated = $this->updateRelativePaths($relative, File::get($src));
                     File::put($target, $updated);
+                    $this->verboseOutput('Copied and updated php file ' . $src . ' to ' . $target);
                 } else {
                     File::copy($src, $target);
+                    $this->verboseOutput('Copied file ' . $src . ' to ' . $target);
                 }
             } else {
                 File::link($src, $target);
+                $this->verboseOutput('Linked file ' . $src . ' to ' . $target);
             }
         }
     }
@@ -181,6 +186,7 @@ class MovePublicDirectoryCommand extends Command
             $message = 'The target directory (' . $target . ') does not exist, create it?';
             if (!$this->confirm($message, true)) return false;
             File::makeDirectory($target, $chmod, true);
+            $this->verboseOutput('Created directory ' . $target);
         }
         return true;
     }
