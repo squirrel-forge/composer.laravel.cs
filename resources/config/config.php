@@ -20,7 +20,8 @@ return [
 
         /**
          * Which activators to use.
-         * Default are ip and range, if needed a keypass GET variable based activator can be added.
+         * Default no activators are set. Recommended are ips and ranges,
+         * if needed a keypass GET variable based activator can be added.
          * Custom activators can be defined as functions and must be referenced with full namespacing,
          * or you may define the use array here in the config using a Closure value,
          * that will get called with two arguments:
@@ -31,7 +32,7 @@ return [
          *   function($request, $middleware):void { $middleware->activate('origin-name'); }
          * ]));
          */
-        'use' => preg_split('/[,;]+/', env('SQF_CS_USE', 'ip,range'), -1, PREG_SPLIT_NO_EMPTY),
+        'use' => preg_split('/[,;]+/', env('SQF_CS_USE', ''), -1, PREG_SPLIT_NO_EMPTY),
 
         /**
          * List of environment variables to fetch client ip from.

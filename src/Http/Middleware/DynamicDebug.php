@@ -58,7 +58,7 @@ class DynamicDebug {
             foreach ($this->config['use'] as $name) {
 
                 // Run available types
-                if ($name instanceof Closure || is_string($name) && function_exists($name)) {
+                if ($name instanceof Closure || is_string($name) && function_exists('sqfcs_activate_with_' . $name)) {
                     call_user_func($name, $request, $this);
                 } else if (method_exists($this, 'activate_with_' . $name)) {
                     call_user_func([$this, 'activate_with_' . $name], $request);
