@@ -7,18 +7,29 @@ use League\Uri\Http as HttpUri;
 use Illuminate\Foundation\Events\DiagnosingHealth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Event;
+use RuntimeException;
+use Throwable;
 
 /** @type string Package version. */
 const VERSION = '0.32.0';
+
+/** @type int Context callback options. */
+const CALLBACK_RUN_CLOSURE = 1 << 0;
+const CALLBACK_BIND_CLOSURE = 1 << 1;
+const CALLBACK_RUN_OBJECT = 1 << 2;
+const CALLBACK_RUN_GLOBAL = 1 << 3;
+const CALLBACK_STRICT = 1 << 4;
+const CALLBACK_RUN_ALL = CALLBACK_RUN_CLOSURE | CALLBACK_RUN_OBJECT | CALLBACK_RUN_GLOBAL | CALLBACK_STRICT;
+const CALLBACK_ALL = CALLBACK_RUN_ALL | CALLBACK_BIND_CLOSURE | CALLBACK_STRICT;
 
 if (!function_exists(__NAMESPACE__ . '\\getClientIp')) {
 
     /**
      * Get actual client ip
      * @param null|Request $request
-     * @return mixed
+     * @return string|null
      */
-    function clientIp(?Request $request = null): mixed
+    function clientIp(?Request $request = null): ?string
     {
         // Get ip from env values
         $names = config('sqf-cs.debug.env');
@@ -248,5 +259,51 @@ if (!function_exists(__NAMESPACE__ . '\\sqfAsset')) {
 
         // Return updated url
         return (string)$url;
+    }
+}
+
+if (!function_exists(__NAMESPACE__ . '\\runContextCallback')) {
+
+    /**
+     * Run contextualized dynamic callback
+     * @param string|array|Closure $callback
+     * @param array|null $params
+     * @param object|null $newThis
+     * @param string|object $scope
+     * @param int $options
+     * @return mixed
+     */
+    function runContextCallback(
+        string|array|Closure $callback,
+        ?array $params = null,
+        ?object $newThis = null,
+        string|object $scope = 'static',
+        int $options = CALLBACK_ALL,
+    ): mixed
+    {
+        $strict = ($options & CALLBACK_STRICT) === CALLBACK_STRICT;
+        if (is_string($callback)
+            && ($options & CALLBACK_RUN_GLOBAL) === CALLBACK_RUN_GLOBAL
+            && (!$strict || function_exists($callback))
+        ) {
+            return call_user_func_array($callback, $params);
+        }
+        if (is_array($callback)
+            && ($options & CALLBACK_RUN_OBJECT) === CALLBACK_RUN_OBJECT
+            && (!$strict || method_exists(...$callback))
+        ) {
+            return call_user_func_array($callback, $params);
+        }
+        if (($options & CALLBACK_RUN_CLOSURE) === CALLBACK_RUN_CLOSURE) {
+            if ((isset($newThis) || isset($scope)) && ($options & CALLBACK_BIND_CLOSURE) === CALLBACK_BIND_CLOSURE) {
+                try {
+                    $callback = $callback->bindTo($newThis, $scope) ?? throw new RuntimeException;
+                } catch (Throwable) {
+                    $callback = $callback->bindTo(null, $scope);
+                }
+            }
+            return $callback(...$params);
+        }
+        return null;
     }
 }
