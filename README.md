@@ -18,6 +18,17 @@
  - [Linking the public directory](#linking-the-public-directory)
    - [Moving the public directory](#moving-the-public-directory)
  - [Storage and environment directories](#storage-and-environment-directories)
+ - [Utilities and helpers](#utilities-and-helpers)
+   - [Data transfer Objects](#data-transfer-objects)
+   - [Helpers](#helpers)
+     - [getClientIp](#getclientip)
+     - [findDirInParentStructure](#finddirinparentstructure)
+     - [requireStorageFolderStructure](#requirestoragefolderstructure)
+     - [joinAndResolvePaths](#joinandresolvepaths)
+     - [getPackageVersion](#getpackageversion)
+     - [getHealthRouteHandler](#gethealthroutehandler)
+     - [sqfAsset](#sqfasset)
+     - [runContextCallback](#runcontextcallback)
 
 ## Module information
 
@@ -249,3 +260,83 @@ $app->useStoragePath($storagePath);
 return $app;
 
 ```
+
+
+## Utilities and helpers
+
+### Data transfer Objects
+
+Provides an ArrayTransformer including basic type casting for simple customizable array base DTOs.
+
+```php
+use SquirrelForge\Laravel\CoreSupport\DTO\ArrayTransformer;
+ArrayTransformer::define(
+    name: 'transform_name',
+    map: [
+        'longName' => (object)['to' => 'shortName'],
+        'fieldName' => (object)['to' => 'convertedName', 'value' => fn($value) => [$value]],
+        'checkbox' => (object)['to' => 'bool', 'type' => 'bool'],
+    ],
+);
+$transformed = ArrayTransformer::transform(
+    name: 'transform_name',
+    source: [
+        'longName' => 'some-value',
+        'fieldName' => 'another-value',
+        'checkbox' => 'checked',
+        'randomName' => 'randomData',
+    ],
+    fields: ['longName', 'fieldName', 'checkbox'],
+    with: ['additional' => 'values', 'defined' => 'somewhere-else'],
+    notNull: true,
+);
+$transformed = [
+    'shortName' => 'some-value',
+    'convertedName' => ['another-value'],
+    'bool' => true,
+];
+```
+
+### Helpers
+
+A collection of abstract helpers, to provide features or solve minor issues.
+
+#### getClientIp
+
+Get IP of current client connection.
+
+```php
+use function SquirrelForge\Laravel\CoreSupport\clientIp;
+$ipv4_or_ipv6 = clientIp();
+```
+
+Can be configured via following env variable:
+
+```dotenv
+SQF_CS_ENV=X-CLIENT-IP,REMOTE_ADDR
+```
+
+#### findDirInParentStructure
+
+```php
+$path = findDirInParentStructure(
+    find: 'cache',
+    path: base_path(),
+    resolve: true,
+    limit: 4,
+);
+```
+
+#### requireStorageFolderStructure
+
+#### joinAndResolvePaths
+
+#### getPackageVersion
+
+#### getHealthRouteHandler
+
+See here: [Health route customization](#health-route-customization)
+
+#### sqfAsset
+
+#### runContextCallback
