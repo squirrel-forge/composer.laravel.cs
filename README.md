@@ -258,50 +258,58 @@ $app->useStoragePath($storagePath);
 
 // Return actual instance
 return $app;
-
 ```
 
-
-## Utilities and helpers
+## Utilities
 
 ### Data transfer Objects
 
-Provides an ArrayTransformer including basic type casting for simple customizable array base DTOs.
+Provides an ArrayTransformer including basic type casting for simple customizable array based DTOs.
 
 ```php
 use SquirrelForge\Laravel\CoreSupport\DTO\ArrayTransformer;
+
+// Mapping definition
 ArrayTransformer::define(
     name: 'transform_name',
     map: [
+        'emptyName' => (object)['to' => 'nulledName'],
         'longName' => (object)['to' => 'shortName'],
         'fieldName' => (object)['to' => 'convertedName', 'value' => fn($value) => [$value]],
         'checkbox' => (object)['to' => 'bool', 'type' => 'bool'],
     ],
 );
+
+// Transform with options
 $transformed = ArrayTransformer::transform(
     name: 'transform_name',
     source: [
+        'emptyName' => '',
         'longName' => 'some-value',
         'fieldName' => 'another-value',
         'checkbox' => 'checked',
         'randomName' => 'randomData',
     ],
-    fields: ['longName', 'fieldName', 'checkbox'],
+    fields: ['emptyName', 'longName', 'fieldName', 'checkbox'],
     with: ['additional' => 'values', 'defined' => 'somewhere-else'],
     notNull: true,
 );
+
+// Result
 $transformed = [
     'shortName' => 'some-value',
     'convertedName' => ['another-value'],
     'bool' => true,
+    'additional' => 'values',
+    'defined' => 'somewhere-else',
 ];
 ```
 
-### Helpers
+## Helpers
 
 A collection of abstract helpers, to provide features or solve minor issues.
 
-#### getClientIp
+### getClientIp
 
 Get IP of current client connection.
 
@@ -316,27 +324,73 @@ Can be configured via following env variable:
 SQF_CS_ENV=X-CLIENT-IP,REMOTE_ADDR
 ```
 
-#### findDirInParentStructure
+### findDirInParentStructure
 
 ```php
+use function SquirrelForge\Laravel\CoreSupport\findDirInParentStructure;
 $path = findDirInParentStructure(
-    find: 'cache',
+    find: 'storage',
     path: base_path(),
     resolve: true,
     limit: 4,
 );
 ```
 
-#### requireStorageFolderStructure
+### requireStorageFolderStructure
 
-#### joinAndResolvePaths
+Created the laravel appropriate storage folder structure, see: [Storage and environment directories](#storage-and-environment-directories)
 
-#### getPackageVersion
+```php
+use function SquirrelForge\Laravel\CoreSupport\requireStorageFolderStructure;
+requireStorageFolderStructure(storage_path());
+```
 
-#### getHealthRouteHandler
+### joinAndResolvePaths
+
+Join and resolve path segments, see: [Storage and environment directories](#storage-and-environment-directories)
+
+```php
+use function SquirrelForge\Laravel\CoreSupport\joinAndResolvePaths;
+$resolved = joinAndResolvePaths(base_path(), '../some/folder/file.php');
+```
+
+### getPackageVersion
+
+```php
+use function SquirrelForge\Laravel\CoreSupport\getPackageVersion;
+$version = getPackageVersion(
+    name: 'lara-cs',
+    vendor: 'squirrel-forge',
+);
+```
+
+### getHealthRouteHandler
 
 See here: [Health route customization](#health-route-customization)
 
-#### sqfAsset
+### sqfAsset
 
-#### runContextCallback
+See here: [Extended asset helper](#extended-asset-helper)
+
+### runContextCallback
+
+Abstraction for running all kinds of callbacks, with options allowing for limitation.
+
+```php
+use function SquirrelForge\Laravel\CoreSupport\runContextCallback;
+
+use const SquirrelForge\Laravel\CoreSupport\CALLBACK_CLOSURE;
+use const SquirrelForge\Laravel\CoreSupport\CALLBACK_RUN_CLOSURE;
+use const SquirrelForge\Laravel\CoreSupport\CALLBACK_BIND_CLOSURE;
+use const SquirrelForge\Laravel\CoreSupport\CALLBACK_RUN_OBJECT;
+use const SquirrelForge\Laravel\CoreSupport\CALLBACK_RUN_GLOBAL;
+use const SquirrelForge\Laravel\CoreSupport\CALLBACK_STRICT;
+use const SquirrelForge\Laravel\CoreSupport\CALLBACK_RUN_ALL;
+use const SquirrelForge\Laravel\CoreSupport\CALLBACK_ALL;
+
+$result = runContextCallback(
+    callback: fn(string $arg1, int $arg2): string $arg1 . '#' . $arg2,
+    params: ['some', 1],
+    options: CALLBACK_CLOSURE,
+);
+```

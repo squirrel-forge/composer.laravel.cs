@@ -11,15 +11,16 @@ use RuntimeException;
 use Throwable;
 
 /** @type string Package version. */
-const VERSION = '0.32.0';
+const VERSION = '0.36.0';
 
 /** @type int Context callback options. */
 const CALLBACK_RUN_CLOSURE = 1 << 0;
 const CALLBACK_BIND_CLOSURE = 1 << 1;
+const CALLBACK_CLOSURE = CALLBACK_RUN_CLOSURE | CALLBACK_BIND_CLOSURE;
 const CALLBACK_RUN_OBJECT = 1 << 2;
 const CALLBACK_RUN_GLOBAL = 1 << 3;
 const CALLBACK_STRICT = 1 << 4;
-const CALLBACK_RUN_ALL = CALLBACK_RUN_CLOSURE | CALLBACK_RUN_OBJECT | CALLBACK_RUN_GLOBAL | CALLBACK_STRICT;
+const CALLBACK_RUN_ALL = CALLBACK_RUN_CLOSURE | CALLBACK_RUN_OBJECT | CALLBACK_RUN_GLOBAL;
 const CALLBACK_ALL = CALLBACK_RUN_ALL | CALLBACK_BIND_CLOSURE | CALLBACK_STRICT;
 
 if (!function_exists(__NAMESPACE__ . '\\getClientIp')) {
@@ -81,13 +82,14 @@ if (!function_exists(__NAMESPACE__ . '\\requireStorageFolderStructure')) {
      * Ensure storage dir has the appropriate structure
      * @param string $path
      * @param int $mask
+     * @param array|null $dirs
      * @return void
      */
-    function requireStorageFolderStructure(string $path, int $mask = 022): void
+    function requireStorageFolderStructure(string $path, int $mask = 022, ?array $dirs = null): void
     {
         $path = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
         if (is_dir($path . 'framework')) return;
-        $dirs = [
+        $dirs = $dirs ?? [
             ['app'],
             ['app', 'private'],
             ['app', 'public'],

@@ -14,6 +14,9 @@ class ArrayTransformer
     /** @var string $typesClass Static class interface SquirrelForge\Laravel\CoreSupport\DTO\TypesContract */
     public static string $typesClass = Types::class;
 
+    /** @var string|null $defaultType Default type to cast when not defined for a field. */
+    public static ?string $defaultType = null;
+
     /** @var array<string, DTOMapDefinition> $maps All defined map types. */
     protected static array $maps = [];
 
@@ -85,8 +88,8 @@ class ArrayTransformer
         $field = static::getField($name, $from);
 
         // Convert value to defined type
-        $type = $field->type ?? null;
-        if (isset($type)) {
+        $type = $field->type ?? static::$defaultType;
+        if (!empty($type)) {
             $value = static::$typesClass::cast($value, $type);
         }
 
@@ -102,7 +105,7 @@ class ArrayTransformer
      * Transform source with given name and fields.
      * @param string $name
      * @param array $source
-     * @param string[] $fields
+     * @param string[]|null $fields
      * @param array|null $with
      * @param bool $notNull
      * @return array
@@ -110,11 +113,12 @@ class ArrayTransformer
     public static function transform(
         string $name,
         array $source,
-        array $fields,
+        ?array $fields = null,
         ?array $with = null,
         bool $notNull = false,
     ): array
     {
+        if (!isset($fields)) $fields = static::fieldNames($name);
         $transformed = [];
         foreach ($fields as $field) {
 
